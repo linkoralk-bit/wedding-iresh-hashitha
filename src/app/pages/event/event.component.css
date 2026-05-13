@@ -442,12 +442,12 @@
 .bg-slide {
   position: absolute; inset: 0;
   background-size: contain; background-position: center;
-  opacity: 60;
-  transition: opacity 10.2s ease, transform 8s linear;
+  opacity: 100;
+  transition: opacity 2.2s ease, transform 8s linear;
   transform: scale(1.05);
 }
 .bg-slide.bg-active {
-  opacity: 140.16;
+  opacity: 0.16;
   transform: scale(1.12);
 }
 .bg-overlay {
