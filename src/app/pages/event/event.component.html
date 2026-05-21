@@ -1,328 +1,736 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KTM Bike Lounge — Private Invitation</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Cormorant+Garamond:ital,wght@1,400;1,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="event.component.css" />
-</head>
-<body>
+<!-- ════════════════════════════════════════════════════════
+     COUTURE NOIR · CHAMPAGNE EDITION
+     A premium invitation for honoured private clients.
+     Obsidian + Cream + Champagne foil · Bodoni / Cormorant.
+     ════════════════════════════════════════════════════════ -->
 
-  <button class="music-toggle" (click)="toggleMusic()">
-  {{ isMusicPlaying ? '❚❚' : '▶' }}
-</button>
+<!-- ░░ LOADING ░░ -->
+<ng-container *ngIf="!event">
+  <div class="full-loader">
+    <div class="fl-mark" aria-hidden="true">
+      <svg viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="36" stroke="url(#flGold)" stroke-width="0.8" fill="none"/>
+        <circle cx="40" cy="40" r="22" stroke="url(#flGold)" stroke-width="0.5" fill="none" opacity="0.7"/>
+        <path d="M40 14 L42 38 L40 66 L38 38 Z" fill="url(#flGold)" opacity="0.85"/>
+        <circle cx="40" cy="40" r="3" fill="#e8c878"/>
+        <defs>
+          <linearGradient id="flGold" x1="0" y1="0" x2="80" y2="80">
+            <stop offset="0%" stop-color="#f4dca0"/>
+            <stop offset="50%" stop-color="#c79b56"/>
+            <stop offset="100%" stop-color="#8a6128"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <p class="fl-title">Curating your invitation</p>
+    <p class="fl-subtitle">A moment, please</p>
+  </div>
+</ng-container>
 
-  <!-- Ambient layers -->
-  <div class="noise-overlay"></div>
-  <div class="scan-lines"></div>
-  <div class="vignette"></div>
+<ng-container *ngIf="event">
 
-  <!-- Particle sparks -->
-  <div class="sparks">
-    <span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span>
+  <!-- ░░ MUSIC ░░ -->
+  <audio #bgMusic loop>
+    <source src="/music/romantic.mp3" type="audio/mp3">
+  </audio>
+  <button class="music-btn"
+          [class.music-on]="isPlaying"
+          (click)="toggleMusic(bgMusic)"
+          aria-label="Toggle background music">
+    <span class="music-icon">{{ isPlaying ? '⏸' : '♫' }}</span>
+    <span class="music-ring" *ngIf="isPlaying" aria-hidden="true"></span>
+  </button>
+
+  <!-- ░░ FLOATING CHAMPAGNE PARTICLES ░░ -->
+  <div class="petal-layer" aria-hidden="true">
+    <div *ngFor="let h of hearts; trackBy: trackHeart"
+         class="petal"
+         [style.left.%]="h.x"
+         [style.animation-duration.s]="h.duration"
+         [style.animation-delay.s]="h.delay"
+         [style.width.px]="h.size"
+         [style.height.px]="h.size"
+         [style.opacity]="h.opacity"
+         [style.background]="heartColor(h.colorIdx)">
+    </div>
   </div>
 
-  <main class="invitation-wrapper" id="invitation">
+  <!-- ════════════════════════════════════════════════════
+       ENTRY SCENE — THE OBSIDIAN INVITATION CARD
+       ════════════════════════════════════════════════════ -->
+  <div class="scroll-scene" id="envelopeScene">
 
-    <!-- ── TOP MARQUEE ─────────────────────────── -->
-    <div class="top-bar">
-      <span class="bar-line"></span>
-      <span class="bar-text">★ STRICTLY PRIVATE · INVITATION ONLY · MAY 2026 ★</span>
-      <span class="bar-line"></span>
+    <!-- Ambient noise + light -->
+    <div class="ss-ambient" aria-hidden="true">
+      <div class="ss-glow ss-glow-1"></div>
+      <div class="ss-glow ss-glow-2"></div>
+      <div class="ss-grain"></div>
     </div>
 
-    <!-- ── PRIVATE CLIENT BANNER ───────────────── -->
-    <div class="vip-banner">
-      <div class="vip-corner tl"></div>
-      <div class="vip-corner tr"></div>
-      <div class="vip-corner bl"></div>
-      <div class="vip-corner br"></div>
-      <div class="vip-inner">
-        <span class="vip-stars">◆ ◆ ◆</span>
-        <span class="vip-text">PRIVATE CLIENT INVITATION</span>
-        <span class="vip-stars">◆ ◆ ◆</span>
-      </div>
-      <div class="vip-serial">
-        <span>NUMBER ONE</span>
-        <span class="serial-num" id="invite-serial">KTM SHOWROOM</span>
-      </div>
+    <!-- Premium hallmark (top) -->
+    <div class="premium-hallmark" aria-label="Private edition">
+      <span class="ph-rule"></span>
+      <span class="ph-foil">PRIVATE&nbsp;COLLECTION</span>
+      <span class="ph-dot">✦</span>
+      <span class="ph-edition">Nº&nbsp;001 · Limited Edition</span>
+      <span class="ph-rule"></span>
     </div>
 
-    <!-- ── HERO IMAGE STAGE ────────────────────── -->
-    <section class="hero-stage">
-      <!-- <div class="hero-img-wrap">
-        <div class="hero-grid-overlay"></div>
-        <div class="hero-glow"></div>
-        <img src="/assets/duke-front-3.jpeg" alt="KTM Duke" class="hero-img" />
-        <div class="hero-fade-bottom"></div>
-        <div class="hero-fade-top"></div>
-        <div class="hero-corner tl">◤</div>
-        <div class="hero-corner tr">◥</div>
-        <div class="hero-corner bl">◣</div>
-        <div class="hero-corner br">◢</div>
-      </div> -->
-      <div class="hero-tag">
-        <span class="hero-tag-dot"></span>
-        UNVEILING THE NEXT GENERATION DUKE
-        <span class="hero-tag-dot"></span>
-      </div>
-    </section>
+    <!-- Eyebrow -->
+    <div class="ss-eyebrow-line" aria-hidden="true">
+      <div class="ssel-rule"></div>
+      <span class="ss-eyebrow">You Are Cordially Invited</span>
+      <div class="ssel-rule"></div>
+    </div>
 
-    <!-- ── LOGO SECTION ────────────────────────── -->
-    <div class="logo-section">
-      <div class="ktm-badge">
-        <div class="ktm-logo-wrap">
-          <svg viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg" class="ktm-svg">
+    <!-- ══ THE PREMIUM CARD ══ -->
+    <div class="scroll-wrap" id="envelopeWrap" (click)="openEnvelope(bgMusic)">
+
+      <!-- Outer foil border -->
+      <div class="card-foil-border" aria-hidden="true"></div>
+
+      <!-- Card body -->
+      <div class="scroll-body">
+
+        <!-- Engraved corner ornaments -->
+        <span class="card-corner card-corner-tl" aria-hidden="true"></span>
+        <span class="card-corner card-corner-tr" aria-hidden="true"></span>
+        <span class="card-corner card-corner-bl" aria-hidden="true"></span>
+        <span class="card-corner card-corner-br" aria-hidden="true"></span>
+
+        <!-- Centred monogram crest -->
+        <div class="card-crest" aria-hidden="true">
+          <svg viewBox="0 0 140 140" fill="none">
+            <circle cx="70" cy="70" r="62" stroke="url(#crestGold)" stroke-width="0.8"/>
+            <circle cx="70" cy="70" r="50" stroke="url(#crestGold)" stroke-width="0.4" opacity="0.55"/>
+            <path d="M70 22 C82 40 92 56 92 74 C92 90 82 102 70 110 C58 102 48 90 48 74 C48 56 58 40 70 22Z"
+                  fill="none" stroke="url(#crestGold)" stroke-width="1.1"/>
+            <path d="M70 36 L72 70 L70 102 L68 70 Z" fill="url(#crestGold)" opacity="0.9"/>
+            <circle cx="70" cy="70" r="4" fill="#f0d68c"/>
             <defs>
-              <linearGradient id="ktm-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#FF8533"/>
-                <stop offset="100%" stop-color="#FF6400"/>
+              <linearGradient id="crestGold" x1="0" y1="0" x2="140" y2="140">
+                <stop offset="0%" stop-color="#f4dca0"/>
+                <stop offset="50%" stop-color="#c79b56"/>
+                <stop offset="100%" stop-color="#8a6128"/>
               </linearGradient>
             </defs>
-            <text
-  x="50%"
-  y="58"
-  text-anchor="middle"font-family="Bebas Neue, sans-serif" font-size="64" fill="url(#ktm-grad)" letter-spacing="-2">KTM</text>
           </svg>
         </div>
-        <div class="tagline-wrap">
-          <span class="ready-tag">◣ READY TO RACE ◢</span>
+
+        <!-- Names + tagline -->
+        <div class="scroll-body-text">
+          <p class="ss-tagline">— The Wedding of —</p>
+          <p class="ss-names-preview">
+            <span>{{ event.groom }}</span>
+            <em>&amp;</em>
+            <span>{{ event.bride }}</span>
+          </p>
+          <div class="ss-rule">
+            <span class="ssr-line"></span>
+            <span class="ssr-diamond">◆</span>
+            <span class="ssr-line"></span>
+          </div>
         </div>
-      </div>
+
+        <!-- Mini calendar plate -->
+        <div class="scroll-body-calendar">
+          <div class="sbc-month-row">
+            <span class="sbc-month">{{ event.date | date:'MMMM' }}</span>
+            <span class="sbc-year">{{ event.date | date:'yyyy' }}</span>
+          </div>
+          <div class="sbc-grid">
+            <div class="sbc-weekdays">
+              <span class="sbc-wd">S</span><span class="sbc-wd">M</span>
+              <span class="sbc-wd">T</span><span class="sbc-wd">W</span>
+              <span class="sbc-wd">T</span><span class="sbc-wd">F</span>
+              <span class="sbc-wd">S</span>
+            </div>
+            <div class="sbc-days">
+              <ng-container *ngFor="let cell of getCalendarCells()">
+                <div class="sbc-day"
+                     [class.sbc-event-day]="cell && cell.toString() === (event.date | date:'d')"
+                     [class.sbc-empty]="!cell">
+                  <span *ngIf="cell">{{ cell }}</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /scroll-body -->
+
+    </div><!-- /scroll-wrap -->
+
+    <!-- Tap hint -->
+    <div class="scroll-hint" id="wsHint">
+      <span class="sh-text">Tap the card to open</span>
+      <div class="sh-arrow" aria-hidden="true"></div>
     </div>
 
-    <!-- ── HERO HEADLINE ───────────────────────── -->
-    <div class="hero-section">
-      <div class="event-label">
-        <em>You are cordially invited to the</em>
+  </div><!-- /scroll-scene -->
+
+  <!-- Reveal overlay -->
+  <div class="burn-overlay" id="filmBurn" aria-hidden="true"></div>
+
+  <!-- ════════════════════════════════════════════════════
+       MAIN INVITATION
+       ════════════════════════════════════════════════════ -->
+  <div class="invitation-reveal" id="letterReveal">
+
+    <!-- Cinematic background slideshow -->
+    <div class="bg-stage" aria-hidden="true">
+      <div *ngFor="let slide of bgSlides; let i = index"
+           class="bg-slide"
+           [class.bg-active]="isBgActive(i)"
+           [style.background-image]="'url(' + slide + ')'">
       </div>
-      <h1 class="event-title">
-        <span class="title-line-1">BIKE</span>
-        <span class="title-line-2">LOUNGE</span>
-        <span class="title-accent">GRAND OPENING · 2026</span>
-      </h1>
-      <div class="subtitle-strip">
-        <span class="strip-text">★ THE BIGGEST KTM SHOWROOM IN SRI LANKA ★</span>
-      </div>
+      <div class="bg-overlay"></div>
+      <div class="bg-vignette"></div>
     </div>
 
-    <!-- ── DIVIDER ─────────────────────────────── -->
-    <div class="orange-divider">
-      <div class="divider-dot"></div>
-      <div class="divider-line"></div>
-      <div class="divider-diamond">◆</div>
-      <div class="divider-line"></div>
-      <div class="divider-dot"></div>
-    </div>
+    <!-- ════════════════════ HERO ════════════════════ -->
+    <section class="hero">
 
-    <!-- ── COUNTDOWN ───────────────────────────── -->
-    <section class="countdown-section">
-      <div class="countdown-label">COUNTDOWN TO OPENING</div>
-      <div class="countdown-grid">
-        <div class="cd-cell">
-          <div class="cd-num" id="cd-days">00</div>
-          <div class="cd-lbl">Days</div>
-        </div>
-        <div class="cd-sep">:</div>
-        <div class="cd-cell">
-          <div class="cd-num" id="cd-hours">00</div>
-          <div class="cd-lbl">Hours</div>
-        </div>
-        <div class="cd-sep">:</div>
-        <div class="cd-cell">
-          <div class="cd-num" id="cd-mins">00</div>
-          <div class="cd-lbl">Minutes</div>
-        </div>
-        <div class="cd-sep">:</div>
-        <div class="cd-cell">
-          <div class="cd-num" id="cd-secs">00</div>
-          <div class="cd-lbl">Seconds</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── DETAILS GRID ────────────────────────── -->
-    <div class="details-grid">
-      <div class="detail-card">
-        <div class="detail-icon">◷</div>
-        <div class="detail-label">DATE</div>
-        <div class="detail-value">MAY 18</div>
-        <div class="detail-sub">2026 · MONDAY</div>
-      </div>
-      <div class="detail-card center-card">
-        <div class="detail-icon">⊙</div>
-        <div class="detail-label">TIME</div>
-        <div class="detail-value">10:00</div>
-        <div class="detail-sub">A.M. SHARP</div>
-      </div>
-      <div class="detail-card">
-        <div class="detail-icon">◉</div>
-        <div class="detail-label">VENUE</div>
-        <div class="detail-value">PELIYAGODA</div>
-        <div class="detail-sub">SHOWROOM</div>
-      </div>
-    </div>
-
-    <!-- ── ADDRESS BLOCK ───────────────────────── -->
-    <div class="address-block">
-      <div class="addr-icon">▶</div>
-      <div class="addr-text">
-        <span class="addr-main">389 NEGOMBO ROAD, PELIYAGODA</span>
-        <span class="addr-country">SRI LANKA</span>
-      </div>
-      <a class="addr-map" href="https://maps.google.com/?q=389+Negombo+Road+Peliyagoda+Sri+Lanka" target="_blank" rel="noopener">
-        <span>MAP</span><span class="addr-arrow">↗</span>
-      </a>
-    </div>
-
-    <!-- ── BIKE GALLERY ────────────────────────── -->
-    <section class="gallery-section">
-      <div class="gallery-heading">
-        <span class="gh-line"></span>
-        <span class="gh-text">★ THE COLLECTION ★</span>
-        <span class="gh-line"></span>
-      </div>
-      <div class="gallery-grid">
-        <figure class="g-item g-tall">
-          <img src="assets/duke-front-1.jpeg" alt="KTM Duke front" loading="lazy" />
-          <figcaption>DUKE · NIGHT BLACK</figcaption>
-        </figure>
-        <figure class="g-item">
-          <img src="assets/duke-tank-1.jpeg" alt="KTM Duke tank" loading="lazy" />
-          <figcaption>ELECTRIC ORANGE</figcaption>
-        </figure>
-        <figure class="g-item">
-          <img src="assets/duke-side.jpeg" alt="KTM Duke side" loading="lazy" />
-          <figcaption>SIDE PROFILE</figcaption>
-        </figure>
-        <figure class="g-item">
-          <img src="assets/duke-tank-2.jpeg" alt="KTM Duke 3/4" loading="lazy" />
-          <figcaption>DUKE · 3/4</figcaption>
-        </figure>
-        <figure class="g-item">
-          <img src="assets/duke-front-1.jpeg" alt="KTM Duke 3/4" loading="lazy" />
-          <figcaption>DUKE · FRONT</figcaption>
-        </figure>
-        <figure class="g-item g-wide">
-          <img src="assets/duke-front-2.jpeg" alt="KTM Duke headlamp" loading="lazy" />
-          <figcaption>SIGNATURE LED · HV ENTERPRISES</figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <!-- ── BIKE VISUAL STRIP ───────────────────── -->
-    <div class="bike-visual-strip">
-      <div class="strip-bg"></div>
-      <div class="speed-lines">
-        <span></span><span></span><span></span><span></span><span></span>
-      </div>
-      <div class="bike-silhouette">
-        <svg viewBox="0 0 420 160" xmlns="http://www.w3.org/2000/svg" class="bike-svg">
-          <circle cx="90" cy="115" r="42" fill="none" stroke="#FF6400" stroke-width="7"/>
-          <circle cx="90" cy="115" r="28" fill="none" stroke="#222" stroke-width="3"/>
-          <circle cx="90" cy="115" r="8" fill="#FF6400"/>
-          <circle cx="330" cy="115" r="42" fill="none" stroke="#FF6400" stroke-width="7"/>
-          <circle cx="330" cy="115" r="28" fill="none" stroke="#222" stroke-width="3"/>
-          <circle cx="330" cy="115" r="8" fill="#FF6400"/>
-          <path d="M90 115 L130 55 L200 45 L260 50 L310 80 L330 115" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-          <path d="M145 55 Q200 20 260 50 L250 58 Q200 32 148 62 Z" fill="#FF6400" opacity="0.9"/>
-          <path d="M260 50 L310 80 L295 85 L255 58 Z" fill="#333"/>
-          <line x1="295" y1="85" x2="310" y2="115" stroke="#aaa" stroke-width="5"/>
-          <line x1="310" y1="80" x2="320" y2="110" stroke="#aaa" stroke-width="4"/>
-          <rect x="155" y="68" width="80" height="40" rx="5" fill="#1a1a1a" stroke="#FF6400" stroke-width="2"/>
-          <path d="M130 100 Q110 110 85 120" fill="none" stroke="#888" stroke-width="5" stroke-linecap="round"/>
-          <line x1="278" y1="38" x2="310" y2="48" stroke="#ccc" stroke-width="4" stroke-linecap="round"/>
-          <ellipse cx="325" cy="70" rx="12" ry="8" fill="#FF6400" opacity="0.7"/>
-          <ellipse cx="325" cy="70" rx="7" ry="5" fill="#fff" opacity="0.9"/>
-          <text x="172" y="92" font-family="Bebas Neue, sans-serif" font-size="18" fill="#FF6400" letter-spacing="2">DUKE</text>
+      <div class="hero-crest fade-up" aria-hidden="true">
+        <svg viewBox="0 0 120 120" fill="none">
+          <circle cx="60" cy="60" r="54" stroke="url(#heroGold)" stroke-width="0.7"/>
+          <circle cx="60" cy="60" r="42" stroke="url(#heroGold)" stroke-width="0.4" opacity="0.6"/>
+          <path d="M60 22 L62 60 L60 98 L58 60 Z" fill="url(#heroGold)" opacity="0.9"/>
+          <circle cx="60" cy="60" r="3.5" fill="#f0d68c"/>
+          <defs>
+            <linearGradient id="heroGold" x1="0" y1="0" x2="120" y2="120">
+              <stop offset="0%" stop-color="#f4dca0"/>
+              <stop offset="50%" stop-color="#c79b56"/>
+              <stop offset="100%" stop-color="#8a6128"/>
+            </linearGradient>
+          </defs>
         </svg>
       </div>
-    </div>
 
-    <!-- ── DRESS CODE / NOTE ───────────────────── -->
-    <section class="dress-section">
-      <div class="ds-row">
-        <div class="ds-col">
-          <div class="ds-lbl">DRESS CODE</div>
-          <div class="ds-val">SMART CASUAL</div>
+      <p class="hero-eyebrow fade-up">— Sacred Wedding Invitation —</p>
+
+      <!-- Names — typewriter -->
+      <div class="hero-couple fade-up">
+        <span class="hero-groom">
+          {{ displayGroom }}
+          <span class="hero-cursor"
+                *ngIf="displayGroom.length < (event.groom?.length || 0)"
+                aria-hidden="true">|</span>
+        </span>
+        <span class="hero-amp">&amp;</span>
+        <span class="hero-bride">
+          {{ displayBride }}
+          <span class="hero-cursor"
+                *ngIf="displayBride.length < (event.bride?.length || 0) && displayGroom.length >= (event.groom?.length || 0)"
+                aria-hidden="true">|</span>
+        </span>
+      </div>
+
+      <!-- Lineage -->
+      <div *ngIf="event.parents" class="hero-lineage fade-up">
+        <div *ngIf="event.parents.groom" class="hl-side">
+          <span class="hl-relation">Son of</span>
+          <span class="hl-parent">{{ event.parents.groom }}</span>
         </div>
-        <div class="ds-col">
-          <div class="ds-lbl">ARRIVAL</div>
-          <div class="ds-val">FROM 10:00 A.M.</div>
-        </div>
-        <div class="ds-col">
-          <div class="ds-lbl">SEATING</div>
-          <div class="ds-val">RESERVED</div>
+        <div class="hl-divider" *ngIf="event.parents.groom && event.parents.bride" aria-hidden="true">◆</div>
+        <div *ngIf="event.parents.bride" class="hl-side">
+          <span class="hl-relation">Daughter of</span>
+          <span class="hl-parent">{{ event.parents.bride }}</span>
         </div>
       </div>
-      <p class="ds-note">
-        <em>"This invitation is extended exclusively to our valued private clients.
-        Kindly present this card upon arrival. Non-transferable."</em>
+
+      <p class="hero-invitation-text fade-up">
+        cordially request the pleasure of your company
       </p>
-    </section>
 
-    <!-- ── RSVP / CONTACT ──────────────────────── -->
-    <section class="contact-section">
-      <div class="contact-heading">★ KINDLY RSVP BY MAY 18 ★</div>
-      <div class="contact-numbers">
-        <a href="tel:0759009888" class="contact-num">
-          <span class="num-icon">📞</span>
-          <span>075 900 9888</span>
-        </a>
-        <div class="contact-sep">·</div>
-        <a href="tel:0721665461" class="contact-num">
-          <span class="num-icon">📞</span>
-          <span>072 166 5461</span>
-        </a>
+      <!-- Date plaque -->
+      <div class="hero-date-badge fade-up">
+        <span class="hdb-corner hdb-corner-tl"></span>
+        <span class="hdb-corner hdb-corner-tr"></span>
+        <span class="hdb-corner hdb-corner-bl"></span>
+        <span class="hdb-corner hdb-corner-br"></span>
+        <span class="hdb-day">{{ event.date | date:'EEEE' }}</span>
+        <div class="hdb-date">
+          {{ event.date | date:'d' }}<sup class="hdb-date-sup">{{ getDaySuffix() }}</sup>
+        </div>
+        <span class="hdb-month-year">{{ event.date | date:'MMMM yyyy' }}</span>
+        <span class="hdb-time">09:00 AM — 04:00 PM</span>
       </div>
-      <a class="rsvp-cta" href="https://wa.me/94759009888?text=I%20will%20attend%20the%20KTM%20Bike%20Lounge%20Grand%20Opening">
-        <span class="rsvp-text">CONFIRM YOUR ATTENDANCE</span>
-        <span class="rsvp-arrow">→</span>
-      </a>
+
+      <!-- Countdown -->
+      <div class="countdown fade-up" *ngIf="countdown.days || countdown.hours || countdown.minutes || countdown.seconds">
+        <div class="cd-block" [class.cd-tick]="tickDays()">
+          <span class="cd-num">{{ fDays }}</span>
+          <span class="cd-label">Days</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-block" [class.cd-tick]="tickHours()">
+          <span class="cd-num">{{ fHours }}</span>
+          <span class="cd-label">Hours</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-block" [class.cd-tick]="tickMinutes()">
+          <span class="cd-num">{{ fMinutes }}</span>
+          <span class="cd-label">Min</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-block" [class.cd-tick]="tickSeconds()">
+          <span class="cd-num">{{ fSeconds }}</span>
+          <span class="cd-label">Sec</span>
+        </div>
+      </div>
+
+      <!-- <div class="scroll-indicator fade-up" aria-hidden="true">
+        <div class="si-line"></div>
+        <div class="si-dot"></div>
+      </div> -->
     </section>
 
-    <!-- ── DIVIDER ─────────────────────────────── -->
-    <div class="orange-divider">
-      <div class="divider-dot"></div>
-      <div class="divider-line"></div>
-      <div class="divider-diamond">◆</div>
-      <div class="divider-line"></div>
-      <div class="divider-dot"></div>
+    <!-- ══ DIVIDER ══ -->
+    <div class="gold-divider fade-up" aria-hidden="true">
+      <div class="gd-line"></div>
+      <div class="gd-lotus">◆</div>
+      <div class="gd-line"></div>
     </div>
 
-    <!-- ── FOOTER ──────────────────────────────── -->
-    <div class="footer-section">
-      <div class="powered-label">PRESENTED BY</div>
-      <div class="company-name">HV ENTERPRISES PVT LTD</div>
-      <div class="company-tagline">AUTHORISED KTM DEALER · PELIYAGODA</div>
-    </div>
+    <!-- ══ CEREMONY CARD ══ -->
+    <section class="inv-section fade-up">
+      <div class="poruwa-ceremony-card">
+        <div class="pc-top-line">
+          <span></span><p>The Sacred Ritual</p><span></span>
+        </div>
+        <div class="pc-icon-wrap">
+          <div class="pc-icon-ring"></div>
+          <svg viewBox="0 0 120 120" class="pc-icon" fill="none">
+            <circle cx="60" cy="60" r="50" stroke="url(#pcGold)" stroke-width="0.8"/>
+            <path d="M60 28 C72 44 80 58 80 72 C80 86 72 96 60 102 C48 96 40 86 40 72 C40 58 48 44 60 28Z"
+                  fill="rgba(199,155,86,0.12)" stroke="url(#pcGold)" stroke-width="1.2"/>
+            <path d="M60 42 L62 72 L60 92 L58 72 Z" fill="url(#pcGold)" opacity="0.85"/>
+            <circle cx="60" cy="72" r="3" fill="#f0d68c"/>
+            <defs>
+              <linearGradient id="pcGold" x1="0" y1="0" x2="120" y2="120">
+                <stop offset="0%" stop-color="#f4dca0"/>
+                <stop offset="100%" stop-color="#8a6128"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h3 class="pc-title">Poruwa Ceremony</h3>
+        <div class="pc-time-wrap">
+          <span class="pc-time-label">Begins At</span>
+          <div class="pc-time">10:08 AM</div>
+        </div>
+        <p class="pc-description">
+          With blessings, traditions, and sacred rituals,
+          the couple will begin their journey together.
+        </p>
+      </div>
+    </section>
 
-    <!-- ── BOTTOM BAR ──────────────────────────── -->
-    <!-- <div class="bottom-bar">
-      <span class="bar-line"></span>
-      <span class="bar-text">★ READY TO RACE · KTM · 2026 · PELIYAGODA ★</span>
-      <span class="bar-line"></span>
+    <!-- <div class="gold-divider fade-up" aria-hidden="true">
+      <div class="gd-line"></div><div class="gd-lotus">◆</div><div class="gd-line"></div>
     </div> -->
 
-    <!-- ── FOOTER ──────────────────────────────── -->
-<div class="footer-section">
-  <div class="powered-label">POWERED BY</div>
+    <!-- ══ OUR STORY ══ -->
+    <!-- <section *ngIf="event.story?.length" class="inv-section fade-up">
+      <div class="inv-card">
+        <p class="card-eyebrow">A Journey Written in Time</p>
+        <p class="card-title">Our Story</p>
+        <div class="story-timeline">
+          <div *ngFor="let s of event.story; let i = index" class="st-item"
+               [style.animation-delay.ms]="i * 80">
+            <div class="st-dot" aria-hidden="true"></div>
+            <h3 class="st-title">{{ s.title }}</h3>
+            <p class="st-body">{{ s.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section> -->
 
-  <div class="company-name">LINKORA</div>
+    <div *ngIf="event.story?.length" class="gold-divider fade-up" aria-hidden="true">
+      <div class="gd-line"></div><div class="gd-lotus">◆</div><div class="gd-line"></div>
+    </div>
 
-  <div class="company-tagline">
-    DIGITAL INVITATIONS · EVENT EXPERIENCES
-  </div>
+    <!-- ══════════════════════════════════════════════════
+         PRIVATE COLLECTION · Illustrated Love Story
+         ══════════════════════════════════════════════════ -->
+    <section class="inv-section fade-up pc-gallery-section">
+      <div class="inv-card pc-gallery-card">
 
-  <a href="tel:0702174799" class="footer-contact">
-    070 217 4799
-  </a>
-</div>
+        <!-- <div class="pcg-hallmark" aria-hidden="true">
+          <span class="pcg-hallmark-rule"></span>
+          <span class="pcg-hallmark-mark">✦  PRIVATE  COLLECTION  ✦</span>
+          <span class="pcg-hallmark-rule"></span>
+        </div>
 
-  </main>
+        <p class="card-eyebrow">Illustrated Love Story</p>
+        <p class="card-title">A Quiet Romance,<br><em>in Six Chapters</em></p>
+        <p class="pcg-deck">
+          A bespoke illustrated edition — created exclusively for our cherished guests.
+          Tap a chapter to turn the page.
+        </p> -->
 
-  <script src="event.component.ts"></script>
-</body>
-</html>
+        <section *ngIf="event.story?.length">
+      <div class="inv-card">
+        <p class="card-eyebrow">A Journey Written in Time</p>
+        <p class="card-title">Our Story</p>
+        <div class="story-timeline">
+          <div *ngFor="let s of event.story; let i = index" class="st-item"
+               [style.animation-delay.ms]="i * 80">
+            <div class="st-dot" aria-hidden="true"></div>
+            <h3 class="st-title">{{ s.title }}</h3>
+            <p class="st-body">{{ s.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+        <div class="pcg-stage">
+          <div class="pcg-frame">
+            <span class="pcg-corner pcg-corner-tl" aria-hidden="true"></span>
+            <span class="pcg-corner pcg-corner-tr" aria-hidden="true"></span>
+            <span class="pcg-corner pcg-corner-bl" aria-hidden="true"></span>
+            <span class="pcg-corner pcg-corner-br" aria-hidden="true"></span>
+
+            <div class="pcg-art-wrap">
+              <img *ngFor="let art of premiumArtworks; let i = index"
+                   class="pcg-art"
+                   [class.pcg-art-active]="i === featuredArtIndex"
+                   [src]="art.src"
+                   [alt]="art.title">
+              <div class="pcg-art-vignette" aria-hidden="true"></div>
+              <div class="pcg-art-grain" aria-hidden="true"></div>
+            </div>
+
+            <div class="pcg-plate">
+              <span class="pcg-plate-chapter">{{ premiumArtworks[featuredArtIndex].chapter }}</span>
+              <h3 class="pcg-plate-title">{{ premiumArtworks[featuredArtIndex].title }}</h3>
+              <div class="pcg-plate-rule" aria-hidden="true"></div>
+              <p class="pcg-plate-caption">{{ premiumArtworks[featuredArtIndex].caption }}</p>
+            </div>
+
+            <button class="pcg-nav pcg-nav-prev" (click)="prevFeaturedArt()" aria-label="Previous chapter">‹</button>
+            <button class="pcg-nav pcg-nav-next" (click)="nextFeaturedArt()" aria-label="Next chapter">›</button>
+          </div>
+        </div>
+
+        <div class="pcg-strip" role="tablist" aria-label="Chapter index">
+          <button *ngFor="let art of premiumArtworks; let i = index"
+                  class="pcg-thumb"
+                  [class.pcg-thumb-active]="i === featuredArtIndex"
+                  role="tab"
+                  [attr.aria-selected]="i === featuredArtIndex"
+                  [attr.aria-label]="art.chapter + ' — ' + art.title"
+                  (click)="selectFeaturedArt(i)">
+            <span class="pcg-thumb-no">{{ i + 1 < 10 ? '0' + (i + 1) : (i + 1) }}</span>
+            <img [src]="art.src" [alt]="art.title" loading="lazy">
+            <span class="pcg-thumb-foil" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <p class="pcg-mark-bottom">
+          <span class="pcg-mark-foil">Hand-illustrated · Numbered · Made for you</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- <div class="gold-divider fade-up" aria-hidden="true">
+      <div class="gd-line"></div><div class="gd-lotus">◆</div><div class="gd-line"></div>
+    </div>
+
+    <section *ngIf="galleryImages.length" class="inv-section fade-up">
+      <div class="inv-card">
+        <p class="card-eyebrow">Captured Moments</p>
+        <p class="card-title">Gallery</p>
+
+        <div class="gallery-stage">
+          <div class="gallery-track" [style.transform]="galleryTranslate">
+            <div *ngFor="let img of galleryImages; let i = index" class="gallery-slide">
+              <img [src]="img" [alt]="'Photo ' + (i + 1)" (click)="openLightbox(i)">
+            </div>
+          </div>
+          <button class="gal-nav gal-prev" (click)="prevSlide()" aria-label="Previous">‹</button>
+          <button class="gal-nav gal-next" (click)="nextSlide()" aria-label="Next">›</button>
+        </div>
+        <div class="gal-dots">
+          <button *ngFor="let d of galleryDots"
+                  class="gal-dot"
+                  [class.gal-dot-active]="d === galleryIndex"
+                  (click)="goToSlide(d)"
+                  [attr.aria-label]="'Go to slide ' + (d + 1)"></button>
+        </div>
+      </div>
+    </section> -->
+
+    <div *ngIf="galleryImages.length" class="gold-divider fade-up" aria-hidden="true">
+      <div class="gd-line"></div><div class="gd-lotus">◆</div><div class="gd-line"></div>
+    </div>
+
+    <!-- ══ SCHEDULE ══ -->
+    <section *ngIf="event.schedule?.length" class="inv-section fade-up">
+      <div class="inv-card">
+        <p class="card-eyebrow">Order of Celebration</p>
+        <p class="card-title">Programme</p>
+        <div class="story-timeline">
+          <div *ngFor="let item of event.schedule; let i = index"
+               class="st-item" [style.animation-delay.ms]="i * 80">
+            <div class="st-dot" aria-hidden="true"></div>
+            <h3 class="st-title" style="font-size:0.95rem">{{ item.time }}</h3>
+            <p class="st-body">{{ item.name }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div *ngIf="event.schedule?.length" class="gold-divider fade-up" aria-hidden="true">
+      <div class="gd-line"></div><div class="gd-lotus">◆</div><div class="gd-line"></div>
+    </div>
+
+    <!-- ══ VENUE ══ -->
+    <section class="inv-section fade-up">
+      <div class="inv-card">
+        <p class="card-eyebrow">Sacred Location</p>
+        <p class="card-title">Venue</p>
+        <p class="venue-name">
+          <span class="venue-location">{{ event.location }}</span>
+          <span class="venue-hall">— Thalia Grand Ballroom</span>
+        </p>
+        <div class="map-wrap">
+          <div class="map-wrap-top" aria-hidden="true"></div>
+          <iframe [src]="mapUrl" allowfullscreen loading="lazy" title="Wedding venue map"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <div class="gold-divider fade-up" aria-hidden="true">
+      <div class="gd-line"></div><div class="gd-lotus">◆</div><div class="gd-line"></div>
+    </div>
+
+    <!-- ══ RSVP ══ -->
+    <section class="inv-section fade-up">
+      <p class="card-eyebrow rsvp-top-eyebrow">Your Presence is Requested</p>
+      <p class="card-title rsvp-top-title">RSVP</p>
+
+      <ng-container *ngIf="!rsvpSubmitted; else rsvpDone">
+        <div class="rsvp-card">
+
+          <div class="rsvp-deadline">
+            <span class="rsvp-deadline-icon">✦</span>
+            <span class="rsvp-deadline-text">Kindly reply by</span>
+            <span class="rsvp-deadline-date">27th June 2026</span>
+          </div>
+
+          <!-- <div class="rsvp-contacts">
+            <div class="rsvp-contact-card">
+              <span class="rsvp-contact-role">Contact</span>
+              <span class="rsvp-contact-name">Iresh</span>
+              <a href="tel:+94716392399" class="rsvp-contact-phone">+94 (71) 643 2239</a>
+            </div>
+            <div class="rsvp-contact-card">
+              <span class="rsvp-contact-role">Contact</span>
+              <span class="rsvp-contact-name">Hashitha</span>
+              <a href="tel:+94774823853" class="rsvp-contact-phone">+94 (70) 355 2884</a>
+            </div>
+          </div> -->
+
+          <form class="rsvp-form" (submit)="submitRsvp($event)">
+            <div class="rf-field">
+              <label class="rf-label">Full Name</label>
+              <input name="name" type="text" class="rf-input" placeholder="Your full name" required>
+            </div>
+            <div class="rf-field">
+              <label class="rf-label">Phone Number</label>
+              <input name="phone" type="tel" class="rf-input" placeholder="+94 xx xxx xxxx" required>
+            </div>
+            <div class="rf-field">
+              <label class="rf-label">Number of Guests</label>
+              <input name="guestCount" type="number" min="1" value="1" class="rf-input">
+            </div>
+            <div class="rf-field">
+              <label class="rf-label">Will You Attend?</label>
+              <select name="attending" class="rf-select" required>
+                <option value="" disabled selected>Please select</option>
+                <option value="true">Yes, I will attend ✦</option>
+                <option value="false">Regretfully unable to attend</option>
+              </select>
+            </div>
+            <div class="rf-field rf-field-full">
+              <label class="rf-label">Message / Comment</label>
+              <textarea name="comment" class="rf-textarea"
+                        placeholder="A warm wish, a memory, or a special note for the couple…"
+                        rows="4"></textarea>
+            </div>
+            <button type="submit" class="rf-submit">
+              <span class="rfs-inner">
+                <span class="rfs-icon">✦</span>
+                <span class="rfs-label">Accept Invitation</span>
+              </span>
+            </button>
+          </form>
+        </div>
+      </ng-container>
+
+      <ng-template #rsvpDone>
+        <div class="rsvp-success">
+          <div class="rs-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="28" stroke="url(#rsGold)" stroke-width="0.8"/>
+              <path d="M22 32 L29 39 L43 24" stroke="url(#rsGold)" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+              <defs>
+                <linearGradient id="rsGold" x1="0" y1="0" x2="64" y2="64">
+                  <stop offset="0%" stop-color="#f4dca0"/>
+                  <stop offset="100%" stop-color="#8a6128"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <h3 class="rs-title">With Gratitude</h3>
+          <p class="rs-body">Your reply has been graciously received.<br>We are honoured to celebrate with you.</p>
+        </div>
+      </ng-template>
+    </section>
+
+    <div class="gold-divider fade-up" aria-hidden="true">
+      <div class="gd-line"></div><div class="gd-lotus">◆</div><div class="gd-line"></div>
+    </div>
+
+    <!-- ══ MEMORY WALL ══ -->
+    <section class="memory-wall fade-up">
+      <div class="memory-wall-inner">
+
+        <div class="memory-header">
+          <p class="memory-eyebrow">
+            <span class="mwe-rule"></span>
+            Shared With Love
+            <span class="mwe-rule"></span>
+          </p>
+          <h2 class="memory-title">Memory Wall</h2>
+          <p class="memory-subtitle">
+            Leave a cherished memory or heartfelt wish<br>
+            for the couple to treasure forever.
+          </p>
+        </div>
+
+        <div class="memory-upload-card">
+          <div class="muc-corner muc-corner-tl"></div>
+          <div class="muc-corner muc-corner-tr"></div>
+          <div class="muc-corner muc-corner-bl"></div>
+          <div class="muc-corner muc-corner-br"></div>
+
+          <p class="muc-label">Your Name</p>
+          <input class="muc-input" type="text"
+                 placeholder="e.g. Amara &amp; Rohan"
+                 [(ngModel)]="guestName">
+
+          <p class="muc-label">Your Message</p>
+          <textarea class="muc-textarea" rows="4"
+                    placeholder="Write a lovely memory or wish…"
+                    [(ngModel)]="memoryMessage"></textarea>
+
+          <div class="muc-file-row">
+            <label class="muc-file-label" for="memoryFileInput">
+              <span class="mfl-icon">⬆</span>
+              <span>{{ memoryFileName || 'Attach a photo (optional)' }}</span>
+            </label>
+            <input id="memoryFileInput" type="file" accept="image/*"
+                   (change)="onMemoryFileChange($event)" style="display:none">
+          </div>
+
+          <button class="muc-btn" (click)="uploadMemory()" [disabled]="memoryUploading">
+            <span class="muc-btn-icon">✦</span>
+            {{ memoryUploading ? 'Sharing…' : 'Share Your Memory' }}
+          </button>
+        </div>
+
+        <ng-container *ngIf="memories.length">
+          <div class="mw-gallery-header" aria-hidden="true">
+            <div class="mwgh-line"></div>
+            <span class="mwgh-label">{{ memories.length }} {{ memories.length === 1 ? 'Memory' : 'Memories' }}</span>
+            <div class="mwgh-line"></div>
+          </div>
+
+          <div class="memory-masonry">
+            <div class="memory-card"
+                 *ngFor="let memory of memories; let i = index"
+                 [attr.data-index]="i">
+              <div class="mc-frame mc-frame-tl"></div>
+              <div class="mc-frame mc-frame-tr"></div>
+              <div class="mc-frame mc-frame-bl"></div>
+              <div class="mc-frame mc-frame-br"></div>
+
+              <div class="mc-photo-wrap" *ngIf="memory.imageUrl">
+                <img [src]="memory.imageUrl"
+                     alt="Memory by {{ memory.guestName }}"
+                     class="mc-photo" loading="lazy">
+                <div class="mc-photo-sheen" aria-hidden="true"></div>
+              </div>
+
+              <div class="mc-body">
+                <div class="mc-quote-mark" aria-hidden="true">"</div>
+                <p class="mc-message">{{ memory.message }}</p>
+                <div class="mc-attribution">
+                  <div class="mc-attr-rule"></div>
+                  <span class="mc-guest-name">{{ memory.guestName }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+    </section>
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="inv-footer">
+      <div class="if-mandala-footer" aria-hidden="true">
+        <svg viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="36" stroke="url(#fGold)" stroke-width="0.7"/>
+          <circle cx="40" cy="40" r="22" stroke="url(#fGold)" stroke-width="0.4" opacity="0.6"/>
+          <path d="M40 12 L42 40 L40 68 L38 40 Z" fill="url(#fGold)" opacity="0.85"/>
+          <circle cx="40" cy="40" r="3.5" fill="#f0d68c"/>
+          <defs>
+            <linearGradient id="fGold" x1="0" y1="0" x2="80" y2="80">
+              <stop offset="0%" stop-color="#f4dca0"/><stop offset="100%" stop-color="#8a6128"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <h2 class="if-names">{{ event.groom }} &amp; {{ event.bride }}</h2>
+      <p class="if-date">{{ event.date | date:'d MMMM yyyy' }} · {{ event.location }}</p>
+
+      <div class="if-rule" aria-hidden="true">
+        <div class="ifr-line"></div>
+        <span class="ifr-diamond">◆</span>
+        <div class="ifr-line"></div>
+      </div>
+
+      <p class="if-blessing">With love &amp; blessings</p>
+      <p class="if-contact">Powered by Linkora · 070 217 4799</p>
+
+      <!-- <div class="if-premium-seal" aria-label="Premium private edition">
+        <span class="ifps-rule"></span>
+        <span class="ifps-foil">PREMIUM&nbsp;·&nbsp;PRIVATE&nbsp;EDITION</span>
+        <span class="ifps-rule"></span>
+      </div>
+      <p class="if-premium-no">Numbered Nº&nbsp;001 · Crafted exclusively for our honoured guests</p> -->
+    </footer>
+
+    <!-- ══ LIGHTBOX ══ -->
+    <div *ngIf="showLightbox"
+         class="lb-overlay"
+         (click)="closeLightbox($event)"
+         role="dialog" aria-modal="true" aria-label="Photo viewer">
+      <button class="lb-close" (click)="closeLightbox()" aria-label="Close">✕</button>
+      <div class="lb-stage" (click)="$event.stopPropagation()">
+        <img [src]="currentImage" class="lb-img" alt="Wedding photo">
+        <button class="lb-nav lb-prev" (click)="prevLightbox()" aria-label="Previous photo">‹</button>
+        <button class="lb-nav lb-next" (click)="nextLightbox()" aria-label="Next photo">›</button>
+      </div>
+      <div class="lb-counter">{{ currentIndex + 1 }} / {{ event.gallery?.length }}</div>
+    </div>
+
+  </div><!-- /invitation-reveal -->
+
+</ng-container>

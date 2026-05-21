@@ -6,10 +6,8 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: 'memories/Hiruni-Akila', pathMatch: 'full' },
-  { path: '', redirectTo: '', pathMatch: 'full' },
-  // { path: '', redirectTo: 'event/Iresh-Hashitha', pathMatch: 'full' },
-  { path: '', component: EventComponent },
-  // { path: 'event/:slug', component: EventComponent },
+  { path: '', redirectTo: 'event/Iresh-Hashitha', pathMatch: 'full' },
+  { path: 'event/:slug', component: EventComponent },
   { path: 'admin', component: AdminComponent },
   { path: 'dashboard/:slug', component: DashboardComponent },
   {
